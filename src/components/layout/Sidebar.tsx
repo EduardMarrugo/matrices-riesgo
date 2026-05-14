@@ -27,10 +27,38 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="flex h-full w-64 shrink-0 flex-col border-r border-slate-200 bg-white">
-      <div className="border-b border-slate-200 px-5 py-4">
-        <h1 className="text-base font-semibold text-slate-800">SGSST · SSOT</h1>
-        <p className="text-xs text-slate-500">Procesos · MIP · MASO</p>
+    <aside
+      role="navigation"
+      aria-label="Menú lateral"
+      className="flex h-full w-[85vw] max-w-[320px] shrink-0 flex-col border-r border-slate-200 bg-white sm:w-72 lg:w-64"
+    >
+      <div className="flex items-start justify-between border-b border-slate-200 px-5 py-4">
+        <div>
+          <h1 className="text-base font-semibold text-slate-800">SGSST · SSOT</h1>
+          <p className="text-xs text-slate-500">Procesos · MIP · MASO</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setSidebarOpen(false)}
+          aria-label="Cerrar menú"
+          className="-mr-2 rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 lg:hidden"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
       </div>
 
       <div className="px-5 py-4">
