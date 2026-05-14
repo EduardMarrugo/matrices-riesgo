@@ -70,8 +70,8 @@ export function ProcessBuilder() {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div>
+      <header className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0">
           <button
             type="button"
             onClick={() => selectProcess(null)}
@@ -79,14 +79,14 @@ export function ProcessBuilder() {
           >
             ← Volver a procesos de {activeClient.name}
           </button>
-          <h2 className="mt-1 text-lg font-semibold text-slate-800">
+          <h2 className="mt-1 break-words text-lg font-semibold text-slate-800">
             {activeProcess.name}
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-xs text-slate-500 sm:text-sm">
             Cliente: {activeClient.name}
             {activeProcess.owner && <> · Responsable: {activeProcess.owner}</>}
             {' · '}
-            Última actualización{' '}
+            Actualizado{' '}
             {new Date(activeProcess.updatedAt).toLocaleString('es-CO')}
           </p>
         </div>

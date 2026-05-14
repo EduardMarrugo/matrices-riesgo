@@ -17,8 +17,14 @@ export function Sidebar() {
   const selectClient = useProcessStore((state) => state.selectClient)
   const activeView = useUiStore((state) => state.activeView)
   const setActiveView = useUiStore((state) => state.setActiveView)
+  const setSidebarOpen = useUiStore((state) => state.setSidebarOpen)
 
   const hasClients = clients.length > 0
+  const closeOnMobile = () => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setSidebarOpen(false)
+    }
+  }
 
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col border-r border-slate-200 bg-white">
@@ -42,6 +48,7 @@ export function Sidebar() {
               const next = event.target.value
               selectClient(next === '' ? null : next)
               setActiveView('matrices')
+              closeOnMobile()
             }}
             className="mt-2 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-300"
           >
@@ -64,6 +71,7 @@ export function Sidebar() {
           onClick={() => {
             selectClient(null)
             setActiveView('matrices')
+            closeOnMobile()
           }}
           className="mt-2 w-full rounded-md border border-dashed border-slate-300 px-3 py-1.5 text-xs text-slate-600 transition-colors hover:border-slate-400 hover:bg-slate-50"
         >
@@ -78,7 +86,10 @@ export function Sidebar() {
               key={item.view}
               label={item.label}
               active={activeView === item.view}
-              onClick={() => setActiveView(item.view)}
+              onClick={() => {
+                setActiveView(item.view)
+                closeOnMobile()
+              }}
             />
           ))}
         </ul>

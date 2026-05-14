@@ -165,16 +165,18 @@ export function ProcessEditor({ process }: ProcessEditorProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-1 border-b border-slate-200">
-        {VIEWS.map((option) => (
-          <ViewTab
-            key={option.id}
-            active={view === option.id}
-            onClick={() => setView(option.id)}
-          >
-            {option.label}
-          </ViewTab>
-        ))}
+      <div className="-mx-3 overflow-x-auto border-b border-slate-200 sm:mx-0">
+        <div className="flex w-max items-center gap-1 px-3 sm:w-auto sm:flex-wrap sm:px-0">
+          {VIEWS.map((option) => (
+            <ViewTab
+              key={option.id}
+              active={view === option.id}
+              onClick={() => setView(option.id)}
+            >
+              {option.label}
+            </ViewTab>
+          ))}
+        </div>
       </div>
 
       <p className="text-xs text-slate-500">{VIEW_DESCRIPTIONS[view]}</p>
@@ -210,7 +212,7 @@ export function ProcessEditor({ process }: ProcessEditorProps) {
         <HeatmapView activities={activities} methodology="maso" />
       )}
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col-reverse items-stretch gap-2 sm:flex-row sm:items-center sm:justify-between">
         <button
           type="button"
           onClick={handleAdd}
@@ -218,7 +220,7 @@ export function ProcessEditor({ process }: ProcessEditorProps) {
         >
           + Agregar actividad
         </button>
-        <p className="text-xs text-slate-500">
+        <p className="text-center text-xs text-slate-500 sm:text-right">
           {activities.length}{' '}
           {activities.length === 1 ? 'actividad' : 'actividades'} en el proceso
         </p>

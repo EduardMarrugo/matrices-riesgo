@@ -52,12 +52,12 @@ export function IndicatorsDashboard() {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-semibold text-slate-800">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h2 className="break-words text-lg font-semibold text-slate-800">
             Indicadores SGSST · {activeClient.name}
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-xs text-slate-500 sm:text-sm">
             Seguimiento mensual Ene–Dic. Los datos se guardan automáticamente al
             editar cada celda.
           </p>
