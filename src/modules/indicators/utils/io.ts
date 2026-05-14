@@ -1,5 +1,5 @@
 import type { Indicator } from '@/core/types/indicator'
-import { downloadJson, slugify } from '@/modules/matrices/utils/io'
+import { downloadJson, slugify } from '@/modules/processes/utils/io'
 
 interface IndicatorExportPayload {
   clientId: string

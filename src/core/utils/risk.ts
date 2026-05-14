@@ -1,4 +1,4 @@
-import type { Acceptability } from '@/core/types/matrix'
+import type { Acceptability } from '@/core/types/process'
 
 export interface ScaleOption {
   value: number

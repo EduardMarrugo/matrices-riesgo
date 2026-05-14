@@ -1,4 +1,4 @@
-import type { Client } from '@/core/types/matrix'
+import type { Client } from '@/core/types/process'
 import type { Indicator } from '@/core/types/indicator'
 import { exportIndicatorsForClient } from '@/modules/indicators/utils/io'
 

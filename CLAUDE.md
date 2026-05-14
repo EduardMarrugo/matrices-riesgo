@@ -70,3 +70,26 @@ Los auditores necesitan visualizar el comportamiento mensual (Enero a Diciembre)
    - Tarjetas de resumen (KPI Cards) en la parte superior con el estado general de la sede (Días sin accidentes, % general de cumplimiento de controles).
 4. Agrega la funcionalidad de exportar la vista actual o la matriz a un formato JSON descargable para respaldar la auditoría.
 </instructions>
+
+Fase 5: Evolución a Modelo SSOT (Procesos y Matrices Unificadas)
+
+<context>
+Basado en el estado actual detallado en FEEDBACK.md, el sistema debe evolucionar para permitir que un Proceso sea auditado desde 3 perspectivas (Caracterización, MIP y MASO) compartiendo la misma información de base y controles.
+</context>
+
+<instructions>
+1. **Refactor del Modelo de Datos (SSOT):**
+   - Evoluciona los tipos en `src/core/types/` para pasar de una "Matriz plana" a una entidad `ProcessEntity` que contiene `UnifiedActivity`.
+   - Cada `UnifiedActivity` debe centralizar en un solo objeto: Identificación, Nodo de Peligros SST (MIP), Nodo de Aspectos MASO, y un nodo único de Controles compartidos (Ingeniería, Administrativos, EPP).
+2. **Refactor del Store (`useProcessStore`):**
+   - Adapta el store de Zustand para manejar la jerarquía de Procesos -> Actividades Unificadas, manteniendo la persistencia en `localStorage`.
+   - Asegura que las acciones de actualización muten la actividad raíz para que los cambios en controles se reflejen automáticamente en todas las vistas.
+3. **Actualización del Editor (`MatrixRowDialog`):**
+   - Refactoriza el modal de edición de actividades para que organice los campos en pestañas (Tabs) o secciones: "SST", "MASO" y "Controles Compartidos".
+   - Mantén el cálculo reactivo de nivel de riesgo (NP × NC) para cada metodología de forma independiente dentro del mismo formulario.
+4. **Implementación de Proyecciones (View Switcher):**
+   - En el componente `MatrixBuilder`, añade un selector de vista (MIP / Caracterización / MASO).
+   - Según la vista activa, la tabla debe proyectar dinámicamente las columnas correspondientes (peligros, aspectos o evaluaciones específicas) utilizando el mismo listado de actividades.
+5. **Preservación de Capacidades:**
+   - No elimines el Mapa de Calor ni los Indicadores; asegúrate de que ahora lean los datos desde la nueva estructura de Procesos.
+</instructions>

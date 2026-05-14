@@ -1,19 +1,17 @@
 import { useMemo } from 'react'
-import { useWatch, type Control } from 'react-hook-form'
-import type { Acceptability } from '@/core/types/matrix'
+import type { Acceptability, UnifiedActivity } from '@/core/types/process'
 import {
   CONSEQUENCE_OPTIONS,
   PROBABILITY_OPTIONS,
   computeRiskLevel,
   getAcceptability,
 } from '@/core/utils/risk'
-import type {
-  MatrixFormValues,
-  MatrixRowFormValues,
-} from '@/modules/matrices/schemas/matrixForm.schema'
 
-interface MatrixHeatmapProps {
-  control: Control<MatrixFormValues>
+type HeatmapMethodology = 'sst' | 'maso'
+
+interface HeatmapViewProps {
+  activities: UnifiedActivity[]
+  methodology: HeatmapMethodology
 }
 
 const CELL_STYLES: Record<Acceptability, string> = {
@@ -28,10 +26,12 @@ const CELL_LABELS: Record<Acceptability, string> = {
   critical: 'No aceptable',
 }
 
-export function MatrixHeatmap({ control }: MatrixHeatmapProps) {
-  const watchedRows = useWatch({ control, name: 'rows' })
-  const rows: MatrixRowFormValues[] = watchedRows ?? []
+const METHODOLOGY_LABEL: Record<HeatmapMethodology, string> = {
+  sst: 'SST · Peligros',
+  maso: 'MASO · Aspectos',
+}
 
+export function HeatmapView({ activities, methodology }: HeatmapViewProps) {
   const probabilities = useMemo(
     () => [...PROBABILITY_OPTIONS].slice().reverse(),
     [],
@@ -39,18 +39,35 @@ export function MatrixHeatmap({ control }: MatrixHeatmapProps) {
   const consequences = CONSEQUENCE_OPTIONS
 
   const cellMap = useMemo(() => {
-    const map = new Map<string, MatrixRowFormValues[]>()
-    for (const row of rows) {
-      const key = `${row.probability}-${row.consequence}`
+    const map = new Map<string, UnifiedActivity[]>()
+    for (const activity of activities) {
+      const node = activity[methodology]
+      if (methodology === 'maso' && !activity.maso.aspect.trim()) continue
+      const key = `${node.probability}-${node.consequence}`
       const list = map.get(key) ?? []
-      list.push(row)
+      list.push(activity)
       map.set(key, list)
     }
     return map
-  }, [rows])
+  }, [activities, methodology])
+
+  const considered = useMemo(() => {
+    if (methodology === 'sst') return activities
+    return activities.filter((a) => a.maso.aspect.trim().length > 0)
+  }, [activities, methodology])
 
   return (
     <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <header className="flex items-baseline justify-between">
+        <h3 className="text-sm font-semibold text-slate-800">
+          Mapa de calor · {METHODOLOGY_LABEL[methodology]}
+        </h3>
+        <span className="text-xs text-slate-500">
+          {considered.length}{' '}
+          {considered.length === 1 ? 'actividad' : 'actividades'}
+        </span>
+      </header>
+
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] border-separate border-spacing-1 text-center text-xs">
           <thead>
@@ -84,9 +101,12 @@ export function MatrixHeatmap({ control }: MatrixHeatmapProps) {
                   {probability.label}
                 </th>
                 {consequences.map((consequence) => {
-                  const level = computeRiskLevel(probability.value, consequence.value)
+                  const level = computeRiskLevel(
+                    probability.value,
+                    consequence.value,
+                  )
                   const acceptability = getAcceptability(level)
-                  const activities = cellMap.get(
+                  const items = cellMap.get(
                     `${probability.value}-${consequence.value}`,
                   ) ?? []
                   return (
@@ -94,11 +114,14 @@ export function MatrixHeatmap({ control }: MatrixHeatmapProps) {
                       key={consequence.value}
                       className={`relative h-20 rounded-md border ${CELL_STYLES[acceptability]}`}
                       title={
-                        activities.length === 0
+                        items.length === 0
                           ? `${level} · ${CELL_LABELS[acceptability]}`
                           : `${level} · ${CELL_LABELS[acceptability]}\n` +
-                            activities
-                              .map((row) => `• ${row.activity || '(sin nombre)'}`)
+                            items
+                              .map(
+                                (activity) =>
+                                  `• ${activity.name || '(sin nombre)'}`,
+                              )
                               .join('\n')
                       }
                     >
@@ -106,10 +129,10 @@ export function MatrixHeatmap({ control }: MatrixHeatmapProps) {
                         <span className="text-base font-bold tabular-nums leading-none">
                           {level}
                         </span>
-                        {activities.length > 0 && (
+                        {items.length > 0 && (
                           <span className="rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-semibold text-slate-700 shadow-sm">
-                            {activities.length}{' '}
-                            {activities.length === 1 ? 'actividad' : 'actividades'}
+                            {items.length}{' '}
+                            {items.length === 1 ? 'actividad' : 'actividades'}
                           </span>
                         )}
                       </div>
@@ -123,8 +146,6 @@ export function MatrixHeatmap({ control }: MatrixHeatmapProps) {
       </div>
 
       <Legend />
-
-      {rows.length > 0 && <ActivityList rows={rows} />}
     </div>
   )
 }
@@ -150,55 +171,6 @@ function Legend() {
           </span>
         </span>
       ))}
-    </div>
-  )
-}
-
-interface ActivityListProps {
-  rows: MatrixRowFormValues[]
-}
-
-function ActivityList({ rows }: ActivityListProps) {
-  const grouped = useMemo(() => {
-    const map = new Map<Acceptability, MatrixRowFormValues[]>([
-      ['critical', []],
-      ['tolerable', []],
-      ['acceptable', []],
-    ])
-    for (const row of rows) {
-      const acceptability = getAcceptability(
-        computeRiskLevel(row.probability, row.consequence),
-      )
-      map.get(acceptability)!.push(row)
-    }
-    return map
-  }, [rows])
-
-  return (
-    <div className="grid gap-3 border-t border-slate-100 pt-3 sm:grid-cols-3">
-      {(['critical', 'tolerable', 'acceptable'] as const).map((acceptability) => {
-        const list = grouped.get(acceptability) ?? []
-        if (list.length === 0) return null
-        return (
-          <div key={acceptability} className="space-y-1">
-            <h4
-              className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-semibold ${CELL_STYLES[acceptability]}`}
-            >
-              {CELL_LABELS[acceptability]} · {list.length}
-            </h4>
-            <ul className="space-y-0.5 text-xs text-slate-600">
-              {list.map((row) => (
-                <li key={row.id} className="truncate">
-                  • {row.activity || '(sin nombre)'} —{' '}
-                  <span className="text-slate-400">
-                    NR {computeRiskLevel(row.probability, row.consequence)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )
-      })}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { MainLayout } from '@/components/layout/MainLayout'
 import { useUiStore } from '@/core/stores/useUiStore'
-import { MatrixBuilder } from '@/modules/matrices/components/MatrixBuilder'
+import { ProcessBuilder } from '@/modules/processes/components/ProcessBuilder'
 import { IndicatorsDashboard } from '@/modules/indicators/components/IndicatorsDashboard'
 
 export default function App() {
@@ -8,7 +8,7 @@ export default function App() {
 
   return (
     <MainLayout>
-      {activeView === 'matrices' ? <MatrixBuilder /> : <IndicatorsDashboard />}
+      {activeView === 'matrices' ? <ProcessBuilder /> : <IndicatorsDashboard />}
     </MainLayout>
   )
 }

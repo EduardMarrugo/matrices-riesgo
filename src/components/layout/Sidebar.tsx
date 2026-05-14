@@ -1,4 +1,4 @@
-import { useMatrixStore } from '@/core/stores/useMatrixStore'
+import { useProcessStore } from '@/core/stores/useProcessStore'
 import { useUiStore, type ActiveView } from '@/core/stores/useUiStore'
 
 interface NavItem {
@@ -7,14 +7,14 @@ interface NavItem {
 }
 
 const navItems: readonly NavItem[] = [
-  { view: 'matrices', label: 'Matrices IPEVAR' },
+  { view: 'matrices', label: 'Procesos · Matrices' },
   { view: 'indicators', label: 'Indicadores SGSST' },
 ]
 
 export function Sidebar() {
-  const clients = useMatrixStore((state) => state.clients)
-  const activeClientId = useMatrixStore((state) => state.activeClientId)
-  const selectClient = useMatrixStore((state) => state.selectClient)
+  const clients = useProcessStore((state) => state.clients)
+  const activeClientId = useProcessStore((state) => state.activeClientId)
+  const selectClient = useProcessStore((state) => state.selectClient)
   const activeView = useUiStore((state) => state.activeView)
   const setActiveView = useUiStore((state) => state.setActiveView)
 
@@ -23,8 +23,8 @@ export function Sidebar() {
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col border-r border-slate-200 bg-white">
       <div className="border-b border-slate-200 px-5 py-4">
-        <h1 className="text-base font-semibold text-slate-800">SGSST · IPEVAR</h1>
-        <p className="text-xs text-slate-500">Matrices de riesgo laboral</p>
+        <h1 className="text-base font-semibold text-slate-800">SGSST · SSOT</h1>
+        <p className="text-xs text-slate-500">Procesos · MIP · MASO</p>
       </div>
 
       <div className="px-5 py-4">

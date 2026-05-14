@@ -1,7 +1,7 @@
 import { useUiStore, type ActiveView } from '@/core/stores/useUiStore'
 
 const VIEW_LABELS: Record<ActiveView, string> = {
-  matrices: 'Matrices IPEVAR',
+  matrices: 'Procesos · Matrices',
   indicators: 'Indicadores SGSST',
 }
 

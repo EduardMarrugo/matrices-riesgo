@@ -1,21 +1,21 @@
-import { useMatrixStore } from '@/core/stores/useMatrixStore'
+import { useProcessStore } from '@/core/stores/useProcessStore'
 import { CreateClientForm } from './CreateClientForm'
-import { CreateMatrixForm } from './CreateMatrixForm'
-import { MatrixEditor } from './MatrixEditor'
-import { MatrixList } from './MatrixList'
-import { MatrixToolbar } from './MatrixToolbar'
+import { CreateProcessForm } from './CreateProcessForm'
+import { ProcessEditor } from './ProcessEditor'
+import { ProcessList } from './ProcessList'
+import { ProcessToolbar } from './ProcessToolbar'
 
-export function MatrixBuilder() {
-  const activeClient = useMatrixStore((state) =>
+export function ProcessBuilder() {
+  const activeClient = useProcessStore((state) =>
     state.clients.find((client) => client.id === state.activeClientId) ?? null,
   )
-  const activeMatrix = useMatrixStore((state) =>
-    state.matrices.find((matrix) => matrix.id === state.activeMatrixId) ?? null,
+  const activeProcess = useProcessStore((state) =>
+    state.processes.find((process) => process.id === state.activeProcessId) ?? null,
   )
-  const firstClientId = useMatrixStore((state) => state.clients[0]?.id ?? null)
-  const hasClients = useMatrixStore((state) => state.clients.length > 0)
-  const selectClient = useMatrixStore((state) => state.selectClient)
-  const selectMatrix = useMatrixStore((state) => state.selectMatrix)
+  const firstClientId = useProcessStore((state) => state.clients[0]?.id ?? null)
+  const hasClients = useProcessStore((state) => state.clients.length > 0)
+  const selectClient = useProcessStore((state) => state.selectClient)
+  const selectProcess = useProcessStore((state) => state.selectProcess)
 
   if (!activeClient) {
     return (
@@ -26,12 +26,12 @@ export function MatrixBuilder() {
               <h2 className="text-lg font-semibold text-slate-800">
                 {hasClients
                   ? 'Registrar nuevo cliente'
-                  : 'Bienvenido al Constructor de Matrices IPEVAR'}
+                  : 'Bienvenido al SGSST · Procesos SSOT'}
               </h2>
               <p className="mt-2 text-sm text-slate-600">
                 {hasClients
                   ? 'Completa los datos del nuevo cliente. Si fue un error, puedes cancelar y volver al cliente anterior.'
-                  : 'Empieza creando un cliente para comenzar a gestionar matrices de riesgo.'}
+                  : 'Empieza creando un cliente. Cada cliente puede tener varios procesos, y cada proceso se audita desde tres perspectivas: Caracterización, MIP (SST) y MASO (Ambiental).'}
               </p>
             </div>
             {hasClients && firstClientId && (
@@ -50,7 +50,7 @@ export function MatrixBuilder() {
     )
   }
 
-  if (!activeMatrix) {
+  if (!activeProcess) {
     return (
       <div className="space-y-6">
         <header>
@@ -58,12 +58,12 @@ export function MatrixBuilder() {
             {activeClient.name}
           </h2>
           <p className="text-sm text-slate-500">
-            Sector: {activeClient.sector}. Selecciona o crea una matriz para
-            empezar a evaluar riesgos.
+            Sector: {activeClient.sector}. Selecciona o crea un proceso para
+            empezar a evaluar SST y aspectos ambientales.
           </p>
         </header>
-        <CreateMatrixForm clientId={activeClient.id} />
-        <MatrixList clientId={activeClient.id} />
+        <CreateProcessForm clientId={activeClient.id} />
+        <ProcessList clientId={activeClient.id} />
       </div>
     )
   }
@@ -74,23 +74,26 @@ export function MatrixBuilder() {
         <div>
           <button
             type="button"
-            onClick={() => selectMatrix(null)}
+            onClick={() => selectProcess(null)}
             className="text-xs text-slate-500 hover:text-slate-700"
           >
-            ← Volver a matrices de {activeClient.name}
+            ← Volver a procesos de {activeClient.name}
           </button>
           <h2 className="mt-1 text-lg font-semibold text-slate-800">
-            {activeMatrix.name}
+            {activeProcess.name}
           </h2>
           <p className="text-sm text-slate-500">
-            Cliente: {activeClient.name} · Última actualización{' '}
-            {new Date(activeMatrix.updatedAt).toLocaleString('es-CO')}
+            Cliente: {activeClient.name}
+            {activeProcess.owner && <> · Responsable: {activeProcess.owner}</>}
+            {' · '}
+            Última actualización{' '}
+            {new Date(activeProcess.updatedAt).toLocaleString('es-CO')}
           </p>
         </div>
-        <MatrixToolbar matrix={activeMatrix} />
+        <ProcessToolbar process={activeProcess} />
       </header>
 
-      <MatrixEditor matrix={activeMatrix} />
+      <ProcessEditor process={activeProcess} />
     </div>
   )
 }

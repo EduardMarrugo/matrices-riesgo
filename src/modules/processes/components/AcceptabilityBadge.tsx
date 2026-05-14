@@ -1,4 +1,4 @@
-import type { Acceptability } from '@/core/types/matrix'
+import type { Acceptability } from '@/core/types/process'
 import { ACCEPTABILITY_META } from '@/core/utils/risk'
 
 interface AcceptabilityBadgeProps {

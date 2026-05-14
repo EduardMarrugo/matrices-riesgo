@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useMatrixStore } from '@/core/stores/useMatrixStore'
+import { useProcessStore } from '@/core/stores/useProcessStore'
 
 const schema = z.object({
   name: z.string().min(1),
@@ -14,7 +14,7 @@ const inputClass =
   'w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-300 aria-[invalid=true]:border-red-400'
 
 export function CreateClientForm() {
-  const createClient = useMatrixStore((state) => state.createClient)
+  const createClient = useProcessStore((state) => state.createClient)
   const { register, handleSubmit, reset, formState } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { name: '', sector: '' },
@@ -33,8 +33,8 @@ export function CreateClientForm() {
       <header>
         <h2 className="text-lg font-semibold text-slate-800">Crear cliente</h2>
         <p className="text-sm text-slate-500">
-          Registra el cliente o negocio que vas a auditar para empezar a
-          construir matrices IPEVAR.
+          Registra el cliente o negocio que vas a auditar. Se creará un proceso
+          de ejemplo automáticamente para que veas el flujo.
         </p>
       </header>
 

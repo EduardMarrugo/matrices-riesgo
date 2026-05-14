@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { useMatrixStore } from '@/core/stores/useMatrixStore'
+import { useProcessStore } from '@/core/stores/useProcessStore'
 import { useIndicatorStore } from '@/core/stores/useIndicatorStore'
 import { summarizeForClient } from '@/modules/indicators/utils/summary'
 import { IndicatorChart } from './IndicatorChart'
@@ -8,7 +8,7 @@ import { IndicatorsToolbar } from './IndicatorsToolbar'
 import { KpiCards } from './KpiCards'
 
 export function IndicatorsDashboard() {
-  const activeClient = useMatrixStore((state) =>
+  const activeClient = useProcessStore((state) =>
     state.clients.find((client) => client.id === state.activeClientId) ?? null,
   )
   const indicators = useIndicatorStore((state) => state.indicators)
