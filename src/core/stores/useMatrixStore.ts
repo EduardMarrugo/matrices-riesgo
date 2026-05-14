@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Client, MatrixRow, RiskMatrix } from '@/core/types/matrix'
 import { newId } from '@/core/utils/id'
 import { nowIso } from '@/core/utils/date'
+import { DEMO_MATRIX_NAME, buildDemoMatrixRows } from '@/core/utils/demoMatrix'
 
 interface MatrixState {
   clients: Client[]
@@ -38,8 +39,17 @@ export const useMatrixStore = create<MatrixStore>()(
           sector,
           createdAt: nowIso(),
         }
+        const demoMatrix: RiskMatrix = {
+          id: newId(),
+          clientId: client.id,
+          name: DEMO_MATRIX_NAME,
+          createdAt: nowIso(),
+          updatedAt: nowIso(),
+          rows: buildDemoMatrixRows(),
+        }
         set((state) => ({
           clients: [...state.clients, client],
+          matrices: [...state.matrices, demoMatrix],
           activeClientId: state.activeClientId ?? client.id,
         }))
         return client

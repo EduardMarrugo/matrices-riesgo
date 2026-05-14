@@ -1,5 +1,12 @@
-import { useEffect } from 'react'
-import { useFieldArray, useForm, useWatch, type Control } from 'react-hook-form'
+import { useEffect, useState, type ReactNode } from 'react'
+import {
+  useFieldArray,
+  useForm,
+  useWatch,
+  type Control,
+  type UseFieldArrayReturn,
+  type UseFormReturn,
+} from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { MatrixRow, RiskMatrix } from '@/core/types/matrix'
 import { useMatrixStore } from '@/core/stores/useMatrixStore'
@@ -16,6 +23,9 @@ import {
   type MatrixRowFormValues,
 } from '@/modules/matrices/schemas/matrixForm.schema'
 import { AcceptabilityBadge } from './AcceptabilityBadge'
+import { MatrixHeatmap } from './MatrixHeatmap'
+
+type ViewMode = 'table' | 'heatmap'
 
 interface MatrixEditorProps {
   matrix: RiskMatrix
@@ -49,15 +59,16 @@ const toStoredRows = (values: MatrixFormValues): MatrixRow[] =>
 
 export function MatrixEditor({ matrix }: MatrixEditorProps) {
   const updateMatrixRows = useMatrixStore((state) => state.updateMatrixRows)
+  const [viewMode, setViewMode] = useState<ViewMode>('table')
 
   const form = useForm<MatrixFormValues>({
     resolver: zodResolver(matrixFormSchema),
     defaultValues: toFormValues(matrix.rows),
   })
 
-  const { control, register, handleSubmit, reset, formState } = form
+  const { control, handleSubmit, reset, formState } = form
 
-  const { fields, append, remove, insert } = useFieldArray({
+  const fieldArray = useFieldArray({
     control,
     name: 'rows',
     keyName: 'fieldId',
@@ -73,6 +84,80 @@ export function MatrixEditor({ matrix }: MatrixEditorProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div className="flex items-center gap-1 border-b border-slate-200">
+        <ViewTab
+          active={viewMode === 'table'}
+          onClick={() => setViewMode('table')}
+        >
+          Editor (tabla)
+        </ViewTab>
+        <ViewTab
+          active={viewMode === 'heatmap'}
+          onClick={() => setViewMode('heatmap')}
+        >
+          Mapa de calor
+        </ViewTab>
+      </div>
+
+      {viewMode === 'heatmap' ? (
+        <>
+          <MatrixHeatmap control={control} />
+          {formState.isDirty && (
+            <div className="flex items-center justify-end gap-2">
+              <span className="text-xs text-amber-600">Cambios sin guardar</span>
+              <button
+                type="submit"
+                className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+              >
+                Guardar matriz
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        <TableView form={form} fieldArray={fieldArray} />
+      )}
+    </form>
+  )
+}
+
+interface ViewTabProps {
+  active: boolean
+  onClick: () => void
+  children: ReactNode
+}
+
+function ViewTab({ active, onClick, children }: ViewTabProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-t-md border-b-2 px-3 py-2 text-sm transition-colors ${
+        active
+          ? 'border-slate-900 font-medium text-slate-900'
+          : 'border-transparent text-slate-500 hover:text-slate-700'
+      }`}
+    >
+      {children}
+    </button>
+  )
+}
+
+type FieldArrayHandle = Pick<
+  UseFieldArrayReturn<MatrixFormValues, 'rows', 'fieldId'>,
+  'fields' | 'append' | 'insert' | 'remove'
+>
+
+interface TableViewProps {
+  form: UseFormReturn<MatrixFormValues>
+  fieldArray: FieldArrayHandle
+}
+
+function TableView({ form, fieldArray }: TableViewProps) {
+  const { control, register, formState } = form
+  const { fields, append, insert, remove } = fieldArray
+  return (
+    <>
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
         <table className="w-full min-w-[1200px] table-fixed text-left text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
@@ -220,7 +305,7 @@ export function MatrixEditor({ matrix }: MatrixEditorProps) {
           </button>
         </div>
       </div>
-    </form>
+    </>
   )
 }
 
