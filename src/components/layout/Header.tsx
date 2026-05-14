@@ -1,9 +1,17 @@
+import { useUiStore, type ActiveView } from '@/core/stores/useUiStore'
+
+const VIEW_LABELS: Record<ActiveView, string> = {
+  matrices: 'Matrices IPEVAR',
+  indicators: 'Indicadores SGSST',
+}
+
 export function Header() {
+  const activeView = useUiStore((state) => state.activeView)
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-6">
       <div className="text-sm">
         <span className="font-medium text-slate-800">Panel principal</span>
-        <span className="ml-2 text-slate-400">/ Resumen</span>
+        <span className="ml-2 text-slate-400">/ {VIEW_LABELS[activeView]}</span>
       </div>
       <div className="flex items-center gap-3 text-sm text-slate-500">
         <span className="hidden sm:inline">Auditor SST</span>

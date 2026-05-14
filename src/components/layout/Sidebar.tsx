@@ -1,16 +1,22 @@
 import { useMatrixStore } from '@/core/stores/useMatrixStore'
+import { useUiStore, type ActiveView } from '@/core/stores/useUiStore'
 
-const navItems = [
-  { label: 'Resumen', active: true },
-  { label: 'Matrices IPEVAR', active: false },
-  { label: 'Indicadores', active: false },
-  { label: 'Configuración', active: false },
+interface NavItem {
+  view: ActiveView
+  label: string
+}
+
+const navItems: readonly NavItem[] = [
+  { view: 'matrices', label: 'Matrices IPEVAR' },
+  { view: 'indicators', label: 'Indicadores SGSST' },
 ]
 
 export function Sidebar() {
   const clients = useMatrixStore((state) => state.clients)
   const activeClientId = useMatrixStore((state) => state.activeClientId)
   const selectClient = useMatrixStore((state) => state.selectClient)
+  const activeView = useUiStore((state) => state.activeView)
+  const setActiveView = useUiStore((state) => state.setActiveView)
 
   const hasClients = clients.length > 0
 
@@ -51,7 +57,12 @@ export function Sidebar() {
       <nav className="flex-1 px-3 pb-4">
         <ul className="space-y-1 text-sm">
           {navItems.map((item) => (
-            <SidebarLink key={item.label} label={item.label} active={item.active} />
+            <SidebarLink
+              key={item.view}
+              label={item.label}
+              active={activeView === item.view}
+              onClick={() => setActiveView(item.view)}
+            />
           ))}
         </ul>
       </nav>
@@ -65,19 +76,20 @@ export function Sidebar() {
 
 interface SidebarLinkProps {
   label: string
-  active?: boolean
+  active: boolean
+  onClick: () => void
 }
 
-function SidebarLink({ label, active = false }: SidebarLinkProps) {
-  const base = 'block rounded-md px-3 py-2 transition-colors'
+function SidebarLink({ label, active, onClick }: SidebarLinkProps) {
+  const base = 'block w-full rounded-md px-3 py-2 text-left transition-colors'
   const styles = active
     ? 'bg-slate-900 text-white'
     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
   return (
     <li>
-      <a href="#" className={`${base} ${styles}`}>
+      <button type="button" onClick={onClick} className={`${base} ${styles}`}>
         {label}
-      </a>
+      </button>
     </li>
   )
 }

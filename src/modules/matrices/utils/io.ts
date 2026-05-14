@@ -33,7 +33,7 @@ export const buildExportPayload = (matrix: RiskMatrix): MatrixExportPayload => (
   rows: matrix.rows,
 })
 
-export const downloadJson = (payload: MatrixExportPayload, filename: string): void => {
+export const downloadJson = (payload: unknown, filename: string): void => {
   const blob = new Blob([JSON.stringify(payload, null, 2)], {
     type: 'application/json',
   })
