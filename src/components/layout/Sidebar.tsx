@@ -1,13 +1,4 @@
-interface PlaceholderClient {
-  id: string
-  name: string
-}
-
-const placeholderClients: PlaceholderClient[] = [
-  { id: 'cli-1', name: 'Minera Andina S.A.' },
-  { id: 'cli-2', name: 'Constructora del Sur' },
-  { id: 'cli-3', name: 'Logística Pacífico' },
-]
+import { useMatrixStore } from '@/core/stores/useMatrixStore'
 
 const navItems = [
   { label: 'Resumen', active: true },
@@ -17,6 +8,12 @@ const navItems = [
 ]
 
 export function Sidebar() {
+  const clients = useMatrixStore((state) => state.clients)
+  const activeClientId = useMatrixStore((state) => state.activeClientId)
+  const selectClient = useMatrixStore((state) => state.selectClient)
+
+  const hasClients = clients.length > 0
+
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col border-r border-slate-200 bg-white">
       <div className="border-b border-slate-200 px-5 py-4">
@@ -31,17 +28,24 @@ export function Sidebar() {
         >
           Cliente activo
         </label>
-        <select
-          id="active-client"
-          className="mt-2 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-300"
-          defaultValue={placeholderClients[0].id}
-        >
-          {placeholderClients.map((client) => (
-            <option key={client.id} value={client.id}>
-              {client.name}
-            </option>
-          ))}
-        </select>
+        {hasClients ? (
+          <select
+            id="active-client"
+            value={activeClientId ?? ''}
+            onChange={(event) => selectClient(event.target.value || null)}
+            className="mt-2 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-300"
+          >
+            {clients.map((client) => (
+              <option key={client.id} value={client.id}>
+                {client.name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <p className="mt-2 rounded-md border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500">
+            Sin clientes registrados aún.
+          </p>
+        )}
       </div>
 
       <nav className="flex-1 px-3 pb-4">
