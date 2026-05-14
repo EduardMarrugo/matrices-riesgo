@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useMatrixStore } from '@/core/stores/useMatrixStore'
 
 interface MatrixListProps {
@@ -5,11 +6,14 @@ interface MatrixListProps {
 }
 
 export function MatrixList({ clientId }: MatrixListProps) {
-  const matrices = useMatrixStore((state) =>
-    state.matrices.filter((matrix) => matrix.clientId === clientId),
-  )
+  const allMatrices = useMatrixStore((state) => state.matrices)
   const activeMatrixId = useMatrixStore((state) => state.activeMatrixId)
   const selectMatrix = useMatrixStore((state) => state.selectMatrix)
+
+  const matrices = useMemo(
+    () => allMatrices.filter((matrix) => matrix.clientId === clientId),
+    [allMatrices, clientId],
+  )
 
   if (matrices.length === 0) {
     return (
