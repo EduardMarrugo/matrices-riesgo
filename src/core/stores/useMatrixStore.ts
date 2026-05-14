@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Client, MatrixRow, RiskMatrix } from '@/core/types/matrix'
+import { newId } from '@/core/utils/id'
+import { nowIso } from '@/core/utils/date'
 
 interface MatrixState {
   clients: Client[]
@@ -19,9 +21,6 @@ interface MatrixActions {
 type MatrixStore = MatrixState & MatrixActions
 
 const STORE_NAME = 'sgsst-matrix-store'
-
-const nowIso = () => new Date().toISOString()
-const newId = () => crypto.randomUUID()
 
 export const useMatrixStore = create<MatrixStore>()(
   persist(
