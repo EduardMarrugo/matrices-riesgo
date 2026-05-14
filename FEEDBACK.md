@@ -110,12 +110,12 @@ src/
   (dev sigue corriendo en raíz).
 - `.github/workflows/deploy.yml` con GitHub Actions: `npm ci` → `npm run build` →
   `actions/upload-pages-artifact@v3` → `actions/deploy-pages@v4`.
-- **Fix aplicado** tras el primer fallo: `actions/configure-pages@v5` con
-  `enablement: true` para que auto-habilite Pages en el repo en el primer run.
 - URL esperada: `https://eduardmarrugo.github.io/matrices-riesgo/`.
-- **Pendiente del usuario**: Settings → Pages → Source debería terminar en
-  "GitHub Actions" (con `enablement: true` la primera ejecución del workflow
-  ya lo dejará configurado).
+- **Bloqueante manual una sola vez**: el `GITHUB_TOKEN` default no tiene
+  scope `administration:write`, así que `actions/configure-pages` con
+  `enablement: true` falla con "Resource not accessible by integration".
+  Usuario debe ir a `Settings → Pages → Source: GitHub Actions` la primera
+  vez. Después de eso el workflow corre limpio en cada push a `main`.
 
 ## Lo que NO se hizo (intencional, fuera de scope)
 
