@@ -3,6 +3,7 @@ import { CreateClientForm } from './CreateClientForm'
 import { CreateMatrixForm } from './CreateMatrixForm'
 import { MatrixEditor } from './MatrixEditor'
 import { MatrixList } from './MatrixList'
+import { MatrixToolbar } from './MatrixToolbar'
 
 export function MatrixBuilder() {
   const activeClient = useMatrixStore((state) =>
@@ -67,6 +68,7 @@ export function MatrixBuilder() {
             {new Date(activeMatrix.updatedAt).toLocaleString('es-CO')}
           </p>
         </div>
+        <MatrixToolbar matrix={activeMatrix} />
       </header>
 
       <MatrixEditor matrix={activeMatrix} />
