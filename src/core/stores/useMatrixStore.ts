@@ -16,6 +16,7 @@ interface MatrixActions {
   createClient: (input: { name: string; sector: string }) => Client
   selectClient: (clientId: string | null) => void
   createMatrix: (input: { clientId: string; name: string }) => RiskMatrix
+  createDemoMatrix: (clientId: string) => RiskMatrix
   selectMatrix: (matrixId: string | null) => void
   updateMatrixRows: (matrixId: string, rows: MatrixRow[]) => void
 }
@@ -71,6 +72,22 @@ export const useMatrixStore = create<MatrixStore>()(
           createdAt: nowIso(),
           updatedAt: nowIso(),
           rows: [],
+        }
+        set((state) => ({
+          matrices: [...state.matrices, matrix],
+          activeMatrixId: matrix.id,
+        }))
+        return matrix
+      },
+
+      createDemoMatrix: (clientId) => {
+        const matrix: RiskMatrix = {
+          id: newId(),
+          clientId,
+          name: DEMO_MATRIX_NAME,
+          createdAt: nowIso(),
+          updatedAt: nowIso(),
+          rows: buildDemoMatrixRows(),
         }
         set((state) => ({
           matrices: [...state.matrices, matrix],

@@ -38,9 +38,16 @@ export function Sidebar() {
           <select
             id="active-client"
             value={activeClientId ?? ''}
-            onChange={(event) => selectClient(event.target.value || null)}
+            onChange={(event) => {
+              const next = event.target.value
+              selectClient(next === '' ? null : next)
+              setActiveView('matrices')
+            }}
             className="mt-2 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-300"
           >
+            <option value="" disabled>
+              Selecciona un cliente
+            </option>
             {clients.map((client) => (
               <option key={client.id} value={client.id}>
                 {client.name}
@@ -52,6 +59,16 @@ export function Sidebar() {
             Sin clientes registrados aún.
           </p>
         )}
+        <button
+          type="button"
+          onClick={() => {
+            selectClient(null)
+            setActiveView('matrices')
+          }}
+          className="mt-2 w-full rounded-md border border-dashed border-slate-300 px-3 py-1.5 text-xs text-slate-600 transition-colors hover:border-slate-400 hover:bg-slate-50"
+        >
+          + Nuevo cliente
+        </button>
       </div>
 
       <nav className="flex-1 px-3 pb-4">

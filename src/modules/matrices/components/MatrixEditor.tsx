@@ -99,6 +99,12 @@ export function MatrixEditor({ matrix }: MatrixEditorProps) {
         </ViewTab>
       </div>
 
+      <p className="text-xs text-slate-500">
+        {viewMode === 'table'
+          ? 'Edita actividades, controles y valoración fila por fila. Usa "Guardar matriz" para persistir los cambios.'
+          : 'Vista visual tipo Excel: cada celda muestra el Nivel de Riesgo (Probabilidad × Consecuencia) coloreado por aceptabilidad. La burbuja indica cuántas actividades caen en esa celda.'}
+      </p>
+
       {viewMode === 'heatmap' ? (
         <>
           <MatrixHeatmap control={control} />

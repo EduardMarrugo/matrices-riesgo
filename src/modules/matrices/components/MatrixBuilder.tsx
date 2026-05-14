@@ -12,19 +12,38 @@ export function MatrixBuilder() {
   const activeMatrix = useMatrixStore((state) =>
     state.matrices.find((matrix) => matrix.id === state.activeMatrixId) ?? null,
   )
+  const firstClientId = useMatrixStore((state) => state.clients[0]?.id ?? null)
+  const hasClients = useMatrixStore((state) => state.clients.length > 0)
+  const selectClient = useMatrixStore((state) => state.selectClient)
   const selectMatrix = useMatrixStore((state) => state.selectMatrix)
 
   if (!activeClient) {
     return (
       <div className="space-y-4">
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-800">
-            Bienvenido al Constructor de Matrices IPEVAR
-          </h2>
-          <p className="mt-2 text-sm text-slate-600">
-            Empieza creando un cliente o seleccionando uno existente en la barra
-            lateral.
-          </p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-slate-800">
+                {hasClients
+                  ? 'Registrar nuevo cliente'
+                  : 'Bienvenido al Constructor de Matrices IPEVAR'}
+              </h2>
+              <p className="mt-2 text-sm text-slate-600">
+                {hasClients
+                  ? 'Completa los datos del nuevo cliente. Si fue un error, puedes cancelar y volver al cliente anterior.'
+                  : 'Empieza creando un cliente para comenzar a gestionar matrices de riesgo.'}
+              </p>
+            </div>
+            {hasClients && firstClientId && (
+              <button
+                type="button"
+                onClick={() => selectClient(firstClientId)}
+                className="text-xs text-slate-500 hover:text-slate-700"
+              >
+                ← Cancelar
+              </button>
+            )}
+          </div>
         </div>
         <CreateClientForm />
       </div>
